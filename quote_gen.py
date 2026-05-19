@@ -3,19 +3,22 @@ import requests
 import random
 import tkinter as tk
 from tkinter import ttk
-req=requests.get("https://quotes.toscrape.com/")
-soup=BeautifulSoup(req.content,'html.parser')
-content=soup.find_all('span',class_='text')
-authors=soup.find_all('small',class_='author')
 author_list=[]
 quote_list=[]
-for quote in content:
-    quote_list.append(quote.text)
-for author in authors:
-    author_list.append(":- " +author.text)
 final_list=[]
-for a,b in zip(quote_list,author_list):
-    final_list.append(a+" "+b)
+for i in range(1,10):
+    url=f"https://quotes.toscrape.com/page/{i}/"
+    req=requests.get(url)
+    soup=BeautifulSoup(req.content,'html.parser')
+    content=soup.find_all('span',class_='text')
+    authors=soup.find_all('small',class_='author')
+    for quote in content:
+        quote_list.append(quote.text)
+    for author in authors:
+        author_list.append(":- " +author.text)
+
+    for a,b in zip(quote_list,author_list):
+        final_list.append(a+" "+b)
 def generate_quote():
     label.config(text=random.choice(final_list))
 
