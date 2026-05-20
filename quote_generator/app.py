@@ -6,7 +6,11 @@ import random
 with open("quote_generator/quotes.json","r") as file:
     final_list=json.load(file)
 def generate_quote():
-    label.config(text=random.choice(final_list))
+    random_quote=random.choice(final_list)
+    quote=random_quote["quote"]
+    author=random_quote["author"]
+    label.configure(text=f'{quote}\n\n--{author}')
+    root.after(10000,generate_quote)
 
 root=tk.Tk()
 root.title("Quote Generator")
@@ -25,4 +29,5 @@ label.pack(pady=20)
 label.pack()
 button=tk.Button(root,text="Generate a Quote :)",command=generate_quote,font=("Segoe UI", 14, "bold"),bg="#3B82F6",fg="white",relief="flat",padx=20,pady=10,cursor="hand2")
 button.pack(pady=20)
+
 root.mainloop()
