@@ -1,6 +1,6 @@
 import json
 import tkinter as tk
-from tkinter import ttk
+import customtkinter as ctk
 import random
 
 with open("quote_generator/quotes.json","r") as file:
@@ -11,23 +11,33 @@ def generate_quote():
     author=random_quote["author"]
     label.configure(text=f'{quote}\n\n--{author}')
     root.after(10000,generate_quote)
-
-root=tk.Tk()
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
+root=ctk.CTk()
 root.title("Quote Generator")
-root.geometry("700x400")
-root.configure(bg="#121212")
-frame=tk.Frame(root,bg="#121212")
-frame.pack(expand=True)
-style = ttk.Style()
-style.theme_use("clam")
-title=tk.Label(frame,text="\U0001F4AD"+"Daily Quote",font=("Segoe UI", 20, "bold"),
-    bg="#121212",
-    fg="white")
+root.geometry("600x300+850+50")
+root.configure(bg_color="#121212")
+frame=ctk.CTkFrame(root,bg_color="#121212")
+frame.pack(expand=True,fill="both")
+title=ctk.CTkLabel(frame,text="\U0001F4AD"+"Daily Quotes",font=("Segoe UI", 20, "bold"),
+    text_color="white")
 title.pack(pady=(10,30))
-label=tk.Label(frame,text="Click below to generate a quote",font=("Poppins",18,"italic"),bg="#1E1E1E",fg="#EAEAEA",wraplength=550,justify="center",padx=25,pady=25)
+label=ctk.CTkLabel(frame,text="",font=("Poppins",18,"italic"),bg_color="#1E1E1E",text_color="#EAEAEA",wraplength=550,justify="center",padx=25,pady=25)
 label.pack(pady=20)
 label.pack()
-button=tk.Button(root,text="Generate a Quote :)",command=generate_quote,font=("Segoe UI", 14, "bold"),bg="#3B82F6",fg="white",relief="flat",padx=20,pady=10,cursor="hand2")
-button.pack(pady=20)
-
+generate_quote()
+close_button=ctk.CTkButton(root,text='X',width=20,height=20,command=root.destroy)
+close_button.place(x=560,y=10)
+root.overrideredirect(True)
+root.attributes("-topmost",True)
+def start_move(event):
+    root.x=event.x
+    root.y=event.y
+def do_move(event):
+    x=event.x_root -root.x
+    y=event.y_root - root.y
+    root.geometry(f"+{x}+{y}")
+root.bind("<Button-1>",start_move)
+root.bind("<B1-Motion>",do_move)
+root.bind("<Escape>", lambda e:root.destroy())
 root.mainloop()
