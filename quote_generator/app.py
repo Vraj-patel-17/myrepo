@@ -10,24 +10,27 @@ def generate_quote():
     quote=random_quote["quote"]
     author=random_quote["author"]
     label.configure(text=f'{quote}\n\n--{author}')
+    root.update_idletasks()
+    width=min(label.winfo_reqwidth()+120,520)
+    height=label.winfo_reqheight()+90
+    root.geometry(f"{width}x{height}")
     root.after(10000,generate_quote)
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 root=ctk.CTk()
 root.title("Quote Generator")
-root.geometry("600x300+850+50")
 root.configure(bg_color="#121212")
 frame=ctk.CTkFrame(root,bg_color="#121212")
-frame.pack(expand=True,fill="both")
+frame.pack(expand=True,fill="both",pady=3,padx=3)
 title=ctk.CTkLabel(frame,text="\U0001F4AD"+"Daily Quotes",font=("Segoe UI", 20, "bold"),
     text_color="white")
-title.pack(pady=(10,30))
-label=ctk.CTkLabel(frame,text="",font=("Poppins",18,"italic"),bg_color="#1E1E1E",text_color="#EAEAEA",wraplength=550,justify="center",padx=25,pady=25)
-label.pack(pady=20)
+title.pack(pady=(5,15))
+label=ctk.CTkLabel(frame,text="",font=("Poppins",14,"italic"),bg_color="#1E1E1E",text_color="#EAEAEA",wraplength=320,justify="center",padx=10,pady=6)
+label.pack(pady=5,padx=10)
 label.pack()
 generate_quote()
 close_button=ctk.CTkButton(root,text='X',width=20,height=20,command=root.destroy)
-close_button.place(x=560,y=10)
+close_button.place(x=450,y=8)
 root.overrideredirect(True)
 root.attributes("-topmost",True)
 def start_move(event):
