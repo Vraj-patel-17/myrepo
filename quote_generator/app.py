@@ -4,6 +4,7 @@ import customtkinter as ctk
 import random
 import os
 import sys
+import requests
 def resource_path(relative_path):
     try:
         base_path=sys._MEIPASS
@@ -11,12 +12,12 @@ def resource_path(relative_path):
         base_path=os.path.abspath(".")
     return os.path.join(base_path,relative_path)
 json_path=resource_path("quote_generator/quotes.json")
-with open(json_path,"r") as file:
-    final_list=json.load(file)
+
 def generate_quote():
-    random_quote=random.choice(final_list)
-    quote=random_quote["quote"]
-    author=random_quote["author"]
+    response=requests.get("https://zenquotes.io/api/random")
+    data=response.json()[0]
+    quote=data["q"]
+    author=data["a"]
     label.configure(text=f'{quote}\n\n--{author}')
     root.update_idletasks()
     width=min(label.winfo_reqwidth()+120,520)
