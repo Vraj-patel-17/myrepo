@@ -5,13 +5,6 @@ import random
 import os
 import sys
 import requests
-def resource_path(relative_path):
-    try:
-        base_path=sys._MEIPASS
-    except Exception:
-        base_path=os.path.abspath(".")
-    return os.path.join(base_path,relative_path)
-json_path=resource_path("quote_generator/quotes.json")
 
 def generate_quote():
     response=requests.get("https://zenquotes.io/api/random")
