@@ -2,8 +2,16 @@ import json
 import tkinter as tk
 import customtkinter as ctk
 import random
-
-with open("quote_generator/quotes.json","r") as file:
+import os
+import sys
+def resource_path(relative_path):
+    try:
+        base_path=sys._MEIPASS
+    except Exception:
+        base_path=os.path.abspath(".")
+    return os.path.join(base_path,relative_path)
+json_path=resource_path("quote_generator/quotes.json")
+with open(json_path,"r") as file:
     final_list=json.load(file)
 def generate_quote():
     random_quote=random.choice(final_list)
