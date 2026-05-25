@@ -9,6 +9,21 @@ slider_frame.pack(pady=10)
 canvas=tk.Canvas(root,bg="#dfe6e9",height=600,width=1200)
 layers=[3,4,2]
 r=30
+entry=tk.Entry(root)
+entry.pack()
+def set_layers():
+    global layers
+    text=entry.get()
+    layers=[int(x) for x in text.split(',')]
+    generate_network()
+    generate_weights()
+    generate_bias()
+    forward_propagation()
+    canvas.delete("all")
+    draw_network()
+button=tk.Button(root,text="Set Layers",command=set_layers)
+button.pack()
+
 def draw_neuron(x,y,radius,color,activation):
     canvas.create_oval(x-radius,y-radius,x+radius,y+radius,fill=color)
     canvas.create_text(x,y,text=f"{activation:.2f}")
