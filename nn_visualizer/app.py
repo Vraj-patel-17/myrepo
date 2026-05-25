@@ -50,12 +50,18 @@ def draw_network():
                 else:
                     color="red"
                 connect_neuron(x,y,x1,y1,thickness,color)
+        
     for i in final_list:
         for j in i:
             x,y,act=j
             brightness=int(abs(act)*255)
             color=f"#{brightness:02x}{brightness:02x}{brightness:02x}"
             draw_neuron(x,y,r,color,act)
+            layer_index=final_list.index(i)
+            neuron_index=i.index(j)
+            if layer_index!=0:
+                bias=all_biases[layer_index-1][neuron_index]
+                canvas.create_text(x,y+40,text=f"b:{bias:.2f}",fill="black")
 def update_network(value=None):
     global final_list
     input_values=[]
