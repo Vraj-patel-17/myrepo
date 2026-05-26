@@ -2,6 +2,7 @@ import tkinter as tk
 import random
 import numpy as np
 from math import *
+import time
 root=tk.Tk()
 root.geometry("1200x700")
 slider_frame=tk.Frame(root)
@@ -136,7 +137,7 @@ def use_tanh():
     activation_function=tanh_activation
     update_network()
 
-def forward_propagation():
+def forward_propagation(animated=False):
     global final_list
     '''weight_value=[]
     for i in range(len(input_values)):
@@ -185,7 +186,11 @@ def forward_propagation():
             x=next_layer[next_neuron][0]
             y=next_layer[next_neuron][1]
             final_list[layer_index+1][next_neuron]=(x,y,activation)         
-    
+    if animated:
+        canvas.delete("all")
+        draw_network()
+        root.update()
+        time.sleep(0.3)
 def generate_bias():
     global all_biases
     all_biases=[]
