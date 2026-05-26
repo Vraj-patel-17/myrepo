@@ -1,7 +1,7 @@
 import tkinter as tk
 import random
 import numpy as np
-from math import e
+from math import *
 root=tk.Tk()
 root.geometry("1200x700")
 slider_frame=tk.Frame(root)
@@ -15,6 +15,7 @@ def set_layers():
     global layers
     text=entry.get()
     layers=[int(x) for x in text.split(',')]
+    create_slider()
     generate_network()
     generate_weights()
     generate_bias()
@@ -59,7 +60,7 @@ def draw_network():
             for next_index,neuron2 in enumerate(next_layer):
                 x1,y1,th=neuron2
                 weight=all_weights[layer_index][next_index][current_index]
-                thickness=abs(th)*5
+                thickness=abs(weight)*5
                 if weight>0:
                     color="green"
                 else:
@@ -89,16 +90,25 @@ def update_network(value=None):
     forward_propagation()
     draw_network()
 sliders=[]
-for i in range(1,(layers[0])+1):
-    mini_frame=tk.Frame(slider_frame,bg="#dfe6e9")
-    mini_frame.pack(side="left",padx=20)
-    slider=tk.Scale(mini_frame,from_=-1,to=1,resolution=0.01,orient="horizontal",command=update_network)
-    slider.pack()
-    label=tk.Label(mini_frame,text=f"Input{i}",bg="#dfe6e9")
-    label.pack()
-    sliders.append(slider)
-def sigmoid(value):
-    return 1/(1+e**(-value))
+def create_slider():
+    for slider in sliders:
+        slider.destroy()
+    sliders.clear()
+    for i in range(layers[0]):
+        mini_frame=tk.Frame(slider_frame,bg="#dfe6e9")
+        mini_frame.pack(side="left",padx=20)
+        slider=tk.Scale(mini_frame,from_=-1,to=1,resolution=0.01,orient="horizontal",command=update_network)
+        slider.pack()
+        label=tk.Label(mini_frame,text=f"Input{i}",bg="#dfe6e9")
+        label.pack()
+        sliders.append(slider)
+def sigmoid(x):
+    return 1/(1+exp(-x))
+def relu(x):
+    return max(0,x)
+def tanh_activation(x):
+    return tanh(x)
+activation_function=sigmoid
 def generate_weights():
     global all_weights
     all_weights=[]
@@ -112,6 +122,19 @@ def generate_weights():
                 neuron_weights.append(random.uniform(-1,1))
             layer_weights.append(neuron_weights)
         all_weights.append(layer_weights)
+
+def use_relu():
+    global activation_function
+    activation_function=relu
+    update_network()
+def use_sigmoid():
+    global activation_function
+    activation_function=sigmoid
+    update_network()
+def use_tanh():
+    global activation_function
+    activation_function=tanh_activation
+    update_network()
 
 def forward_propagation():
     global final_list
@@ -158,7 +181,7 @@ def forward_propagation():
                 current_activation=current_layer[current_neuron][2]
                 weight=all_weights[layer_index][next_neuron][current_neuron]
                 z+=current_activation*weight
-            activation=sigmoid(z)
+            activation=activation_function(z)
             x=next_layer[next_neuron][0]
             y=next_layer[next_neuron][1]
             final_list[layer_index+1][next_neuron]=(x,y,activation)         
@@ -172,6 +195,12 @@ def generate_bias():
         for neuron in range(layers[layer_index]):
             layer_biases.append(random.uniform(-1,1))
         all_biases.append(layer_biases)
+sigmoid_button=tk.Button(root,text="sigmoid",command=use_sigmoid)
+sigmoid_button.pack()
+relu_button=tk.Button(root,text="reLU",command=use_relu)
+relu_button.pack()
+tanh_button=tk.Button(root,text="tanh",command=use_tanh)
+tanh_button.pack()
 generate_network()
 generate_weights()
 generate_bias()
