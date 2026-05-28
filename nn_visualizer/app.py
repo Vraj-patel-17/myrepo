@@ -1,55 +1,67 @@
 import tkinter as tk
+import customtkinter as ctk
 import random
 import numpy as np
 from math import *
 import time
-root=tk.Tk()
-root.geometry("1200x700")
-slider_frame=tk.Frame(root)
-slider_frame.pack(pady=10)   
-canvas=tk.Canvas(root,bg="#dfe6e9",height=600,width=1200)
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
+root=ctk.CTk()
+root.geometry("1400x850")
+root.configure(fg_color="#0f172a")
+sidebar=ctk.CTkFrame(root,width=250,corner_radius=0,fg_color="#111827")
+sidebar.pack(side="left",fill="y")
+main_frame=ctk.CTkFrame(root,fg_color="#0f172a")
+main_frame.pack(side="right",fill="both",expand=True)
+title=ctk.CTkLabel(sidebar,text="Neural Network Visualizer",font=("Segoe UI",22,"bold"))
+title.pack(pady=20)
+slider_frame=ctk.CTkFrame(sidebar,fg_color="#1e293b")
+slider_frame.pack(padx=15,pady=20,fill="x") 
+canvas=tk.Canvas(main_frame,bg="#0f172a",height=600,width=1200,highlightthickness=0)
+canvas.pack(fill="both",expand=True,padx=20,pady=20)
 layers=[3,4,2]
 r=30
-entry=tk.Entry(root)
-entry.pack()
+entry=ctk.CTkEntry(sidebar,placeholder_text="Example : 3,4,2",height=40)
+entry.pack(pady=20,padx=20,fill="x")
 def set_layers():
     global layers
     text=entry.get()
-    layers=[int(x) for x in text.split(',')]
-    create_slider()
+    layers=list(map(int,text.split(",")))
     generate_network()
     generate_weights()
     generate_bias()
+    create_slider()
     forward_propagation()
     canvas.delete("all")
     draw_network()
-button=tk.Button(root,text="Set Layers",command=set_layers)
-button.pack()
-
+button=ctk.CTkButton(sidebar,text="Set Layers",command=set_layers,corner_radius=12,height=40,fg_color="#2563eb",hover_color="#1d4ed8",font=("Inter",11))
+button.pack(pady=10,padx=20,fill="x")
 def draw_neuron(x,y,radius,color,activation):
+    canvas.create_oval(x-radius+4,y-radius+4,x+radius+4,y+radius+4,fill="#000000",outline="")
     canvas.create_oval(x-radius,y-radius,x+radius,y+radius,fill=color)
-    canvas.create_text(x,y,text=f"{activation:.2f}")
+    canvas.create_text(x,y,text=f"{activation:.2f}",font=("Inter",11))
 def connect_neuron(x1,y1,x2,y2,thickness,color):
     canvas.create_line(x1,y1,x2,y2,fill=color,width=thickness)
-def generate_network():
-    
+def generate_network(): 
     global layers
     global r
     global final_list
     final_list=[]
+    spacing=100
+    layer_spacing=250
     for layer_index in range(len(layers)):
         neuron_count=layers[layer_index]
         layer_position=[]
-        neurons=layers[layer_index]
-        #total_height=spacing*(neurons-1)
-        #start_y=center-total_height//2
+        x=200+layer_index*layer_spacing
+
+        total_height=spacing*(neuron_count-1)
+        start_y=350-total_height/2
         #x=x_positions[layer_index]
         for neuron_index in range(neuron_count):
-            x=200 +layer_index*250
-            y=300 + (neuron_index-neuron_count/2)*100
+            y=start_y+neuron_index*spacing
             activation=0
             #draw_neuron(x,y,r,color)
-            layer_position.append((x,y,0))
+            layer_position.append((x,y,activation))
         final_list.append(layer_position)
 def draw_network():
     global final_list
@@ -61,24 +73,23 @@ def draw_network():
             for next_index,neuron2 in enumerate(next_layer):
                 x1,y1,th=neuron2
                 weight=all_weights[layer_index][next_index][current_index]
-                thickness=abs(weight)*5
+                thickness=max(1,abs(weight)*4)
                 if weight>0:
-                    color="green"
+                    color="#22c55e"
                 else:
-                    color="red"
-                connect_neuron(x,y,x1,y1,thickness,color)
-        
+                    color="#ef4444"
+                connect_neuron(x,y,x1,y1,thickness,color)       
     for i in final_list:
         for j in i:
             x,y,act=j
-            brightness=int(abs(act)*255)
+            brightness=min(255,max(0,int(abs(act)*255)))
             color=f"#{brightness:02x}{brightness:02x}{brightness:02x}"
             draw_neuron(x,y,r,color,act)
             layer_index=final_list.index(i)
             neuron_index=i.index(j)
             if layer_index!=0:
                 bias=all_biases[layer_index-1][neuron_index]
-                canvas.create_text(x,y+40,text=f"b:{bias:.2f}",fill="black")
+                canvas.create_text(x,y+40,text=f"b:{bias:.2f}",fill="white",font=("Segoe UI",10,"bold"))
 def update_network(value=None):
     global final_list
     input_values=[]
@@ -87,21 +98,22 @@ def update_network(value=None):
         x=final_list[0][i][0]
         y=final_list[0][i][1]
         final_list[0][i]=(x,y,input_values[i])
-    canvas.delete("all")
+    
     forward_propagation()
+    canvas.delete("all")
     draw_network()
 sliders=[]
 def create_slider():
-    for slider in sliders:
-        slider.destroy()
+    for widget in slider_frame.winfo_children():
+        widget.destroy()
     sliders.clear()
     for i in range(layers[0]):
-        mini_frame=tk.Frame(slider_frame,bg="#dfe6e9")
-        mini_frame.pack(side="left",padx=20)
-        slider=tk.Scale(mini_frame,from_=-1,to=1,resolution=0.01,orient="horizontal",command=update_network)
-        slider.pack()
-        label=tk.Label(mini_frame,text=f"Input{i}",bg="#dfe6e9")
-        label.pack()
+        mini_frame=ctk.CTkFrame(slider_frame,fg_color="transparent")
+        mini_frame.pack(fill="x",pady=8)
+        label=ctk.CTkLabel(mini_frame,text=f"Input{i+1}",font=("Inter",11))
+        label.pack(anchor="w")
+        slider=ctk.CTkSlider(mini_frame,from_=-1,to=1,number_of_steps=200,command=update_network)
+        slider.pack(fill="x",pady=5)
         sliders.append(slider)
 def sigmoid(x):
     return 1/(1+exp(-x))
@@ -200,16 +212,16 @@ def generate_bias():
         for neuron in range(layers[layer_index]):
             layer_biases.append(random.uniform(-1,1))
         all_biases.append(layer_biases)
-sigmoid_button=tk.Button(root,text="sigmoid",command=use_sigmoid)
-sigmoid_button.pack()
-relu_button=tk.Button(root,text="reLU",command=use_relu)
-relu_button.pack()
-tanh_button=tk.Button(root,text="tanh",command=use_tanh)
-tanh_button.pack()
+sigmoid_button=ctk.CTkButton(sidebar,text="Sigmoid",command=use_sigmoid,font=("Inter",11))
+sigmoid_button.pack(pady=8,padx=20,fill="x")
+relu_button=ctk.CTkButton(sidebar,text="reLU",command=use_relu,font=("Inter",11))
+relu_button.pack(pady=8,padx=20,fill="x")
+tanh_button=ctk.CTkButton(sidebar,text="tanh",command=use_tanh,font=("Inter",11))
+tanh_button.pack(pady=8,padx=20,fill="x")
 generate_network()
 generate_weights()
 generate_bias()
+create_slider()
 forward_propagation()
 draw_network()
-canvas.pack()
 root.mainloop()
