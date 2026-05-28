@@ -20,7 +20,7 @@ slider_frame.pack(padx=15,pady=20,fill="x")
 canvas=tk.Canvas(main_frame,bg="#0f172a",height=600,width=1200,highlightthickness=0)
 canvas.pack(fill="both",expand=True,padx=20,pady=20)
 layers=[3,4,2]
-r=30
+radius=30
 entry=ctk.CTkEntry(sidebar,placeholder_text="Example : 3,4,2",height=40)
 entry.pack(pady=20,padx=20,fill="x")
 def set_layers():
@@ -38,7 +38,7 @@ button=ctk.CTkButton(sidebar,text="Set Layers",command=set_layers,corner_radius=
 button.pack(pady=10,padx=20,fill="x")
 def draw_neuron(x,y,radius,color,activation):
     canvas.create_oval(x-radius+4,y-radius+4,x+radius+4,y+radius+4,fill="#000000",outline="")
-    canvas.create_oval(x-radius,y-radius,x+radius,y+radius,fill=color)
+    canvas.create_oval(x-radius,y-radius,x+radius,y+radius,fill=color,outline="#ffffff")
     canvas.create_text(x,y,text=f"{activation:.2f}",font=("Inter",11))
 def connect_neuron(x1,y1,x2,y2,thickness,color):
     canvas.create_line(x1,y1,x2,y2,fill=color,width=thickness)
@@ -69,11 +69,12 @@ def draw_network():
         current_layer=final_list[layer_index]
         next_layer=final_list[layer_index+1]
         for current_index,neuron1 in enumerate(current_layer):
-            x,y,_=neuron1
+            x,y,act=neuron1
             for next_index,neuron2 in enumerate(next_layer):
                 x1,y1,th=neuron2
                 weight=all_weights[layer_index][next_index][current_index]
-                thickness=max(1,abs(weight)*4)
+                signal=weight*act
+                thickness=int(1+abs(signal)*12)
                 if weight>0:
                     color="#22c55e"
                 else:
@@ -82,9 +83,14 @@ def draw_network():
     for i in final_list:
         for j in i:
             x,y,act=j
-            brightness=min(255,max(0,int(abs(act)*255)))
-            color=f"#{brightness:02x}{brightness:02x}{brightness:02x}"
-            draw_neuron(x,y,r,color,act)
+            #brightness=min(255,max(0,int(abs(act)*255)))
+          #  color=f"#{brightness:02x}{brightness:02x}{brightness:02x}"
+            value=max(0,min(1,abs(act)))
+            r=int(120*value)
+            g=int(80 + 175*value)
+            b=255
+            color=f"#{r:02x}{g:02x}{b:02x}"
+            draw_neuron(x,y,radius,color,act)
             layer_index=final_list.index(i)
             neuron_index=i.index(j)
             if layer_index!=0:
