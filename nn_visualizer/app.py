@@ -16,13 +16,32 @@ main_frame.pack(side="right",fill="both",expand=True)
 title=ctk.CTkLabel(sidebar,text="Neural Network Visualizer",font=("Segoe UI",22,"bold"))
 title.pack(pady=20)
 slider_frame=ctk.CTkFrame(sidebar,fg_color="#1e293b")
-slider_frame.pack(padx=15,pady=20,fill="x") 
-canvas=tk.Canvas(main_frame,bg="#0f172a",height=600,width=1200,highlightthickness=0)
+slider_frame.pack(padx=15,pady=20,fill="x")
+canvas_frame=ctk.CTkFrame(main_frame,fg_color="#0f172a")
+canvas_frame.pack(side="left",fill="both",expand=True)
+
+output_frame=ctk.CTkFrame(main_frame,width=250,fg_color="#111827")
+output_frame.pack(side="right",fill="y",padx=10,pady=10)
+output_frame.pack_propagate(False)
+canvas=tk.Canvas(canvas_frame,bg="#0f172a",height=600,width=1200,highlightthickness=0)
 canvas.pack(fill="both",expand=True,padx=20,pady=20)
 layers=[3,4,2]
 radius=30
 entry=ctk.CTkEntry(sidebar,placeholder_text="Example : 3,4,2",height=40)
 entry.pack(pady=20,padx=20,fill="x")
+output_title=ctk.CTkLabel(output_frame,text="Outputs",font=("Segoe UI",18,"bold")
+)
+output_title.pack(pady=15)
+output_labels=[]
+def create_output_labels():
+    global output_labels
+    for label in output_labels:
+        label.destroy()
+    output_labels=[]
+    for i in range(layers[-1]):
+        lbl=ctk.CTkLabel(output_frame,text=f"Neuron {i+1}: 0.00" ,font=("Segoe UI",14))
+        lbl.pack(pady=5)
+        output_labels.append(lbl)
 def set_layers():
     global layers
     text=entry.get()
@@ -31,7 +50,9 @@ def set_layers():
     generate_weights()
     generate_bias()
     create_slider()
+    create_output_labels()
     forward_propagation()
+    
     canvas.delete("all")
     draw_network()
 button=ctk.CTkButton(sidebar,text="Set Layers",command=set_layers,corner_radius=12,height=40,fg_color="#2563eb",hover_color="#1d4ed8",font=("Inter",11))
@@ -155,7 +176,7 @@ def use_tanh():
     activation_function=tanh_activation
     update_network()
 
-def forward_propagation(animated=False):
+def forward_propagation():
     global final_list
     '''weight_value=[]
     for i in range(len(input_values)):
@@ -204,11 +225,10 @@ def forward_propagation(animated=False):
             x=next_layer[next_neuron][0]
             y=next_layer[next_neuron][1]
             final_list[layer_index+1][next_neuron]=(x,y,activation)         
-    if animated:
-        canvas.delete("all")
-        draw_network()
-        root.update()
-        time.sleep(0.3)
+    output_layer=final_list[-1]
+    for i,neuron in enumerate(output_layer):
+        activation=neuron[2]
+        output_labels[i].configure(text=f"Neuron {i+1}: {activation:.3f}")
 def generate_bias():
     global all_biases
     all_biases=[]
@@ -228,6 +248,9 @@ generate_network()
 generate_weights()
 generate_bias()
 create_slider()
+create_output_labels()
 forward_propagation()
 draw_network()
+print(len(output_labels))
+print(len(final_list[-1]))
 root.mainloop()
