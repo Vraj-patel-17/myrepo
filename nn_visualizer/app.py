@@ -26,7 +26,7 @@ output_frame.pack_propagate(False)
 canvas=tk.Canvas(canvas_frame,bg="#0f172a",height=600,width=1200,highlightthickness=0)
 canvas.pack(fill="both",expand=True,padx=20,pady=20)
 layers=[3,4,2]
-radius=30
+radius=35
 entry=ctk.CTkEntry(sidebar,placeholder_text="Example : 3,4,2",height=40)
 entry.pack(pady=20,padx=20,fill="x")
 output_title=ctk.CTkLabel(output_frame,text="Outputs",font=("Segoe UI",18,"bold")
@@ -68,12 +68,12 @@ def generate_network():
     global r
     global final_list
     final_list=[]
-    spacing=100
-    layer_spacing=250
+    spacing=130
+    layer_spacing=280
     for layer_index in range(len(layers)):
         neuron_count=layers[layer_index]
         layer_position=[]
-        x=200+layer_index*layer_spacing
+        x=250+layer_index*layer_spacing
 
         total_height=spacing*(neuron_count-1)
         start_y=350-total_height/2
@@ -116,7 +116,7 @@ def draw_network():
             neuron_index=i.index(j)
             if layer_index!=0:
                 bias=all_biases[layer_index-1][neuron_index]
-                canvas.create_text(x,y+40,text=f"b:{bias:.2f}",fill="white",font=("Segoe UI",10,"bold"))
+                canvas.create_text(x,y+43,text=f"b:{bias:.2f}",fill="white",font=("Segoe UI",10,"bold"))
 def update_network(value=None):
     global final_list
     input_values=[]
@@ -238,12 +238,18 @@ def generate_bias():
         for neuron in range(layers[layer_index]):
             layer_biases.append(random.uniform(-1,1))
         all_biases.append(layer_biases)
+def regen_weights():
+    generate_weights()
+    generate_bias()
+    update_network()
 sigmoid_button=ctk.CTkButton(sidebar,text="Sigmoid",command=use_sigmoid,font=("Inter",11))
 sigmoid_button.pack(pady=8,padx=20,fill="x")
 relu_button=ctk.CTkButton(sidebar,text="reLU",command=use_relu,font=("Inter",11))
 relu_button.pack(pady=8,padx=20,fill="x")
 tanh_button=ctk.CTkButton(sidebar,text="tanh",command=use_tanh,font=("Inter",11))
 tanh_button.pack(pady=8,padx=20,fill="x")
+regen_weights_button=ctk.CTkButton(sidebar,text="Randomize Network",command=regen_weights,font=("Inter",11),fg_color="#2563eb",height=40,corner_radius=12)
+regen_weights_button.pack(pady=8,padx=20,fill="x")
 generate_network()
 generate_weights()
 generate_bias()
