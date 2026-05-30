@@ -20,18 +20,23 @@ slider_frame.pack(padx=15,pady=20,fill="x")
 canvas_frame=ctk.CTkFrame(main_frame,fg_color="#0f172a")
 canvas_frame.pack(side="left",fill="both",expand=True)
 
-output_frame=ctk.CTkFrame(main_frame,width=250,fg_color="#111827")
+output_frame=ctk.CTkFrame(main_frame,width=350,fg_color="#111827")
 output_frame.pack(side="right",fill="y",padx=10,pady=10)
 output_frame.pack_propagate(False)
 canvas=tk.Canvas(canvas_frame,bg="#0f172a",height=600,width=1200,highlightthickness=0)
 canvas.pack(fill="both",expand=True,padx=20,pady=20)
 layers=[3,4,2]
 radius=35
+
 entry=ctk.CTkEntry(sidebar,placeholder_text="Example : 3,4,2",height=40)
 entry.pack(pady=20,padx=20,fill="x")
 output_title=ctk.CTkLabel(output_frame,text="Outputs",font=("Segoe UI",18,"bold")
 )
 output_title.pack(pady=15)
+output_values_frame = ctk.CTkFrame(output_frame, fg_color="transparent")
+output_values_frame.pack(fill="x")
+stats_label=ctk.CTkLabel(output_frame,font=("Segoe UI",20))
+stats_label.pack(fill="x", padx=10, pady=(50,10))
 output_labels=[]
 def create_output_labels():
     global output_labels
@@ -39,8 +44,8 @@ def create_output_labels():
         label.destroy()
     output_labels=[]
     for i in range(layers[-1]):
-        lbl=ctk.CTkLabel(output_frame,text=f"Neuron {i+1}: 0.00" ,font=("Segoe UI",14))
-        lbl.pack(pady=5)
+        lbl=ctk.CTkLabel(output_values_frame,text=f"Neuron {i+1}: 0.00" ,font=("Segoe UI",20))
+        lbl.pack(pady=3)
         output_labels.append(lbl)
 def set_layers():
     global layers
@@ -49,10 +54,10 @@ def set_layers():
     generate_network()
     generate_weights()
     generate_bias()
+    stats()
     create_slider()
     create_output_labels()
     forward_propagation()
-    
     canvas.delete("all")
     draw_network()
 button=ctk.CTkButton(sidebar,text="Set Layers",command=set_layers,corner_radius=12,height=40,fg_color="#2563eb",hover_color="#1d4ed8",font=("Inter",11))
@@ -175,7 +180,6 @@ def use_tanh():
     global activation_function
     activation_function=tanh_activation
     update_network()
-
 def forward_propagation():
     global final_list
     '''weight_value=[]
@@ -242,6 +246,22 @@ def regen_weights():
     generate_weights()
     generate_bias()
     update_network()
+def stats():
+    num_layers=len(layers)
+    num_weights=0
+    for i in range(len(layers)-1):
+        num_weights+=layers[i]*layers[i+1]
+    num_neurons=sum(layers)
+    num_biases=num_neurons-layers[0]
+    parameters=num_weights+num_biases
+    stats_label.configure(text=f"Layers: {num_layers}\n"
+             f"Neurons: {num_neurons}\n"
+             f"Weights: {num_weights}\n"
+             f"Biases: {num_biases}\n"
+             f"Parameters: {parameters}")
+    
+                       
+
 sigmoid_button=ctk.CTkButton(sidebar,text="Sigmoid",command=use_sigmoid,font=("Inter",11))
 sigmoid_button.pack(pady=8,padx=20,fill="x")
 relu_button=ctk.CTkButton(sidebar,text="reLU",command=use_relu,font=("Inter",11))
@@ -250,13 +270,13 @@ tanh_button=ctk.CTkButton(sidebar,text="tanh",command=use_tanh,font=("Inter",11)
 tanh_button.pack(pady=8,padx=20,fill="x")
 regen_weights_button=ctk.CTkButton(sidebar,text="Randomize Network",command=regen_weights,font=("Inter",11),fg_color="#2563eb",height=40,corner_radius=12)
 regen_weights_button.pack(pady=8,padx=20,fill="x")
+
 generate_network()
 generate_weights()
 generate_bias()
+stats()
 create_slider()
 create_output_labels()
 forward_propagation()
 draw_network()
-print(len(output_labels))
-print(len(final_list[-1]))
 root.mainloop()
