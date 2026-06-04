@@ -19,7 +19,6 @@ slider_frame=ctk.CTkFrame(sidebar,fg_color="#1e293b")
 slider_frame.pack(padx=15,pady=20,fill="x")
 canvas_frame=ctk.CTkFrame(main_frame,fg_color="#0f172a")
 canvas_frame.pack(side="left",fill="both",expand=True)
-
 output_frame=ctk.CTkFrame(main_frame,width=350,fg_color="#111827")
 output_frame.pack(side="right",fill="y",padx=10,pady=10)
 output_frame.pack_propagate(False)
@@ -27,7 +26,6 @@ canvas=tk.Canvas(canvas_frame,bg="#0f172a",height=600,width=1200,highlightthickn
 canvas.pack(fill="both",expand=True,padx=20,pady=20)
 layers=[3,4,2]
 radius=35
-
 entry=ctk.CTkEntry(sidebar,placeholder_text="Example : 3,4,2",height=40)
 entry.pack(pady=20,padx=20,fill="x")
 output_title=ctk.CTkLabel(output_frame,text="Outputs",font=("Segoe UI",18,"bold")
