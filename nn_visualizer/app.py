@@ -66,27 +66,7 @@ def draw_neuron(x,y,radius,color,activation):
     canvas.create_text(x,y,text=f"{activation:.2f}",font=("Inter",11))
 def connect_neuron(x1,y1,x2,y2,thickness,color):
     canvas.create_line(x1,y1,x2,y2,fill=color,width=thickness)
-def generate_network(): 
-    global layers
-    global r
-    global final_list
-    final_list=[]
-    spacing=130
-    layer_spacing=280
-    for layer_index in range(len(layers)):
-        neuron_count=layers[layer_index]
-        layer_position=[]
-        x=250+layer_index*layer_spacing
 
-        total_height=spacing*(neuron_count-1)
-        start_y=350-total_height/2
-        #x=x_positions[layer_index]
-        for neuron_index in range(neuron_count):
-            y=start_y+neuron_index*spacing
-            activation=0
-            #draw_neuron(x,y,r,color)
-            layer_position.append((x,y,activation))
-        final_list.append(layer_position)
 def draw_network():
     global final_list
     for layer_index in range(len(final_list)-1):
@@ -120,6 +100,28 @@ def draw_network():
             if layer_index!=0:
                 bias=all_biases[layer_index-1][neuron_index]
                 canvas.create_text(x,y+43,text=f"b:{bias:.2f}",fill="white",font=("Segoe UI",10,"bold"))
+def generate_network(): 
+    global layers
+    global r
+    global final_list
+    final_list=[]
+    spacing=130
+    layer_spacing=280
+    for layer_index in range(len(layers)):
+        neuron_count=layers[layer_index]
+        layer_position=[]
+        x=250+layer_index*layer_spacing
+
+        total_height=spacing*(neuron_count-1)
+        start_y=350-total_height/2
+        #x=x_positions[layer_index]
+        for neuron_index in range(neuron_count):
+            y=start_y+neuron_index*spacing
+            activation=0
+            #draw_neuron(x,y,r,color)
+            layer_position.append((x,y,activation))
+        final_list.append(layer_position)
+
 def update_network(value=None):
     global final_list
     input_values=[]
