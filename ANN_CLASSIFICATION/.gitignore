@@ -1,1 +1,6 @@
-.pkl
+
+logs/
+*.h5
+*.pkl
+__pycache__/
+.ipynb_checkpoints/
