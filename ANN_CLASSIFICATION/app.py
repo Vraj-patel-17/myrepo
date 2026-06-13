@@ -3,14 +3,16 @@ import pandas as pd
 import pickle
 import streamlit as st
 import tensorflow as tf
-model = tf.keras.models.load_model('model.h5')
-with open('label_encoder_geo.pkl', 'rb') as file:
+from pathlib import Path
+BASE_DIR = Path(__file__).parent
+model = tf.keras.models.load_model(BASE_DIR / "model.h5")
+with open(BASE_DIR / "label_encoder_geo.pkl", "rb") as file:
     label_encoder_geo = pickle.load(file)
 
-with open('label_encoder_gender.pkl', 'rb') as file:
+with open(BASE_DIR / "label_encoder_gender.pkl", "rb") as file:
     label_encoder_gender = pickle.load(file)
 
-with open('scaler.pkl', 'rb') as file:
+with open(BASE_DIR / "scaler.pkl", "rb") as file:
     scaler = pickle.load(file)
 st.title('Customer Churn Prediction')
 geography = st.selectbox(
